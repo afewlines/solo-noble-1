@@ -1,6 +1,18 @@
 # csc421-solo-noble
+#### Phase 2
 
-## Project setup
+Preview: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble
+
+Documentation: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble/docs
+
+Built with: Vue.js, Three.js, GSAP.
+Seems to run fine on modern Firefox and Chrome, already noticing a few CSS issues.
+
+
+## Instructions for running locally
+Requires Node.js, npm
+
+### Project setup
 ```
 npm install
 ```
@@ -15,10 +27,7 @@ npm run serve
 npm run build
 ```
 
-### Lints and fixes files
+### Generate Documentation
 ```
-npm run lint
+npm run docs
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
