@@ -1,0 +1,61 @@
+/* MENU TRANSITION FORMATTING */
+.menu-transition-enter-active {
+  transition: opacity 2000ms ease;
+}
+
+.menu-transition-leave-active {
+  transition: opacity 500ms ease;
+}
+
+.menu-transition-enter,
+.menu-transition-leave-to {
+  opacity: 0;
+}
+/* BUTTON FORMATTING */
+.box.button-row {
+  flex-grow      : 0;
+  display        : flex;
+  flex-direction : row;
+  justify-content: center;
+  margin-top     : 0.25em;
+  margin-bottom  : 0.25em;
+}
+
+.box.button-item {
+  width : 6em;
+  height: 3em;
+  margin: 0 0.25em;
+}
+
+.box.button-item.back {
+  width    : 6em;
+  height   : 3em;
+  font-size: 0.5em;
+}
+
+.box.button-item:active {
+  transition      : all 25ms;
+  background-color: rgba(200, 200, 200, 0.25);
+  border-color    : rgba(200, 200, 200);
+  color           : rgba(200, 200, 200);
+}
+
+.flex-gallery {
+  display         : flex;
+  flex-flow       : column;
+  justify-content : center;
+  width           : 14em;
+  height          : 14em;
+  margin          : 1em auto;
+  flex-grow       : 0;
+  background-color: rgba(255, 255, 255, 0.25);
+  border          : 0.125em solid rgb(255, 255, 255);
+  border-radius   : 0.5em;
+  box-shadow      : 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
+}
+
+.flex-gallery-row {
+  display  : flex;
+  flex     : 1;
+  flex-flow: row;
+}

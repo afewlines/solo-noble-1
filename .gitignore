@@ -1,7 +1,10 @@
 .DS_Store
 node_modules
 /dist
+/docs
 
+# my files to ignore
+.skr_scpconfig
 
 # local env files
 .env.local
