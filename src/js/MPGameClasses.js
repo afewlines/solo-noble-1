@@ -29,7 +29,7 @@ const LOADER_GLTF = new GLTFLoader();
  * @property {Board} boardPlayer - Board in play
  * @property {Board} boardComputer - Board in play
  * @property {Object} boardData - Board data, initial peg spots
- * @property {Object} Object - Peg data, maybe more?
+ * @property {Object} pegData - Peg data, maybe more?
  * @property {number} pegsTotal - Total Pegs created for board
  * @property {number} pegsRemoved - Total Pegs jumped/removed
  */

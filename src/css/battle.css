@@ -1,0 +1,145 @@
+#game-screen {
+  position: absolute;
+  top     : 0;
+  left    : 0;
+  height  : 100vh;
+  width   : 100vw;
+  z-index : 2;
+}
+
+#ui {
+  position      : absolute;
+  top           : 0;
+  left          : 0;
+  height        : 100vh;
+  width         : 100vw;
+  z-index       : 3;
+  pointer-events: none;
+}
+
+.ui-box {
+  position        : absolute;
+  width           : 24em;
+  height          : auto;
+  left            : calc(50vw - 12em);
+  display         : flex;
+  flex-direction  : column;
+  justify-content : center;
+  background-color: rgba(0,0,0,0.3);
+  box-shadow      : 0 0 2em 2.125em rgba(0,0,0,0.3);
+  text-shadow     : 0 0 0.5em rgba(0,0,0,0.5);
+}
+
+.ui-box.cheer {
+  left            : calc(50vw - 17.5em);
+  top             : calc(50vh - 10em);
+  width           : 35em;
+  height          : 20em;
+  padding         : 1em;
+  background-color: rgba(0,0,0,0.7);
+  box-shadow      : 0 0 5em 6.5em rgba(0,0,0,0.7);
+}
+
+.ui-box > .row {
+  flex-grow      : 0;
+  display        : flex;
+  flex-direction : row;
+  justify-content: center;
+  margin-top     : 0.25em;
+  margin-bottom  : 0.25em;
+}
+
+.ui-box.cheer > h1 {
+  font-size: 4em;
+  padding  : 0.125em 0.5em 0.5em;
+}
+
+.ui-box.cheer > .row {
+  font-size    : 1.25em;
+  margin-top   : 0.125em;
+  margin-bottom: 0.125em;
+}
+
+.row.info > h3 {
+  flex-grow  : 1;
+  text-align : center;
+  padding    : 0.25em 0.25em 0;
+  font-family: 'Cardo';
+  font-weight: 300;
+}
+
+.row.info > .bar {
+  height    : 2.5em;
+  display   : flex;
+  margin    : 1em 0 0;
+  transition: flex-grow 500ms ease-in-out;
+}
+
+.bar.local {
+  background-color: rgba(81, 131, 89, 0.5);
+}
+
+.bar.other {
+  background-color: rgba(131, 81, 89, 0.5);
+}
+
+.row.info-win > h3 {
+  flex-grow    : 0;
+  padding-right: 0.25em;
+  font-family  : 'Fira Sans';
+  font-weight  : 400;
+  font-size    : 1.5em;
+  line-height  : 1em;
+}
+
+.row.info-win > span {
+  flex-grow  : 0;
+  font-weight: 300;
+  font-size  : 1.5em;
+  line-height: 1em;
+}
+
+.row.info-lose > h3 {
+  flex-grow   : 0;
+  padding-left: 0.25em;
+  font-family : 'Fira Sans';
+  font-weight : 300;
+  font-size   : 1.25em;
+  line-height : 1em;
+}
+
+.row.info-lose > span {
+  flex-grow  : 0;
+  font-weight: 300;
+  font-size  : 1.25em;
+  line-height: 1em;
+}
+
+.button-item {
+  font-size     : 1.35em;
+  width         : 6.25em;
+  height        : 3.25em;
+  margin        : 1em;
+  text-shadow   : none;
+  pointer-events: all;
+}
+
+.button-item:active {
+  transition      : all 25ms;
+  background-color: rgba(200, 200, 200, 0.25);
+  border-color    : rgba(200, 200, 200);
+  color           : rgba(200, 200, 200);
+}
+
+.ui-fade-enter-active {
+  transition: opacity 2000ms ease;
+}
+
+.ui-fade-leave-active {
+  transition: opacity 500ms ease;
+}
+
+.ui-fade-enter,
+.ui-fade-leave-to {
+  opacity: 0;
+}

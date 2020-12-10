@@ -1,6 +1,9 @@
 <script>
 // MAIN APP VUE COMPONENT
-  import { gsap } from 'gsap';
+  import {
+    gsap
+  } from 'gsap';
+  import * as io from 'socket.io-client';
 
   /**
    * Vue.js App Component
@@ -17,7 +20,6 @@
     methods: {
       /**
        * Start SP standard handler
-       * @param {string} mode - Type of game to start
        * @param {Object} payload - Game data to store
        * @memberof App
        * @instance
@@ -27,8 +29,23 @@
         if ( this.$route.path == "/standard/freeplay" ) {
           this.$router.go( -1 );
         }
-        setTimeout( function () { this.$router.push( '/standard/freeplay' ) }.bind( this ), 500 )
+        setTimeout( function () {
+          this.$router.push( '/standard/freeplay' )
+        }.bind( this ), 500 )
         console.log( 'STARTING SINGLE PLAYER GAME' );
+      },
+      /**
+       * Start MP battle handler
+       * @param {Object} payload - Game data to store
+       * @memberof App
+       * @instance
+       */
+      startMP( payload ) {
+        this.gameData = payload;
+        setTimeout( function () {
+          this.$router.push( '/multinoble/play' )
+        }.bind( this ), 500 )
+        console.log( 'STARTING ONLINE MULTIPLAYER GAME' );
       },
       /**
        * Store persistent data
@@ -43,6 +60,42 @@
           localStorage[ payload.target ] = payload.data;
         }
       },
+      /**
+       * Establish/Confirm connection to MP server
+       * @returns {boolean} - If connection successful
+       * @memberof App
+       * @instance
+       */
+      async connectToServer() {
+        if ( this.socket && this.socket.connected ) {
+          this.socket.close();
+        }
+
+        let sock = "https://solo-noble-server.glitch.me/";
+        // let sock = "127.0.0.1:3000";
+
+        var attempts = 0;
+        var socket = io( sock );
+        await new Promise( ( res ) => setTimeout( res, 1000 ) );
+        while ( socket.disconnected && attempts < 5 ) {
+          socket = io( sock );
+          attempts++;
+          console.log( `Connecting to: ${sock}` );
+          await new Promise( ( res ) => setTimeout( res, 2000 ) );
+        }
+        if ( socket.disconnected ) {
+          return false;
+        }
+
+        this.socket = socket;
+        this.socket.on("error",(e)=>{
+          window.alert(`Error: ${e}`);
+          this.$router.replace("/");
+        })
+        console.log( "Connection to MP server established" );
+        return true;
+      },
+
       /**
        * Assign hover tweens to buttons
        * @param {element} button - Type of game to start
@@ -78,6 +131,7 @@
         // GAME DATAS
         gameData: null,
         persistentData: {},
+        socket: null,
       };
     },
     /**
@@ -91,6 +145,7 @@
         }
         this.persistentData[ varName ] = localStorage[ varName ];
       }
+      //this.connectToServer();
     },
   };
 </script>
@@ -99,6 +154,7 @@
 <div id="app"
        class="fullscreen">
     <router-view @start-sp="startSP"
+                 @start-mp="startMP"
                  @store-data="storeData" />
   </div>
 </template>

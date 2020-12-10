@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 
 
 /**
@@ -151,7 +151,7 @@ const THREEx = {
     board.add(...triggers);
     board.position.set(0, 0.5, 0);
     return { board: board, pegs: pegs, triggers: triggers };
-  }
+  },
 };
 
 export { THREEx }

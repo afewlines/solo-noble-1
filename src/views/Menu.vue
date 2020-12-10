@@ -1,10 +1,10 @@
 <script>
-// @ is an alias to /src
+
+  // @ is an alias to /src
   import MainMenu from '@/components/menus/MainMenu.vue';
   import StatisticsMenu from '@/components/menus/StatisticsMenu.vue';
   import SPMenu from '@/components/menus/SPMenu.vue';
-
-
+  import MPMenu from '@/components/menus/MPMenu.vue';
 
   /**
    * Enum for the main menu.
@@ -21,9 +21,10 @@
     /** @type {String} */
     MULTIPLAYER: 'MULTIPLAYER',
     /** @type {String} */
+    VSAI: 'VSAI',
+    /** @type {String} */
     STATISTICS: 'STATISTICS',
   };
-
 
   /**
    * Vue.js View: Main Menu
@@ -36,6 +37,7 @@
       MainMenu,
       StatisticsMenu,
       SPMenu,
+      MPMenu,
     },
     methods: {
       /**
@@ -44,11 +46,11 @@
        * @memberof Menu
        * @instance
        */
-      tryStateChange( target ) {
-        if ( target in this.states ) {
+      tryStateChange(target) {
+        if (target in this.states) {
           this.state = target;
-          if ( target == MenuState.MULTIPLAYER ) {
-            this.$router.push( '/standard/vsAI' );
+          if (target == MenuState.VSAI) {
+            this.$router.push('/standard/vsAI');
           }
         }
       },
@@ -59,8 +61,8 @@
        * @memberof Menu
        * @instance
        */
-      start( mode, payload ) {
-        this.$emit( mode, payload );
+      start(mode, payload) {
+        this.$emit(mode, payload);
       },
     },
     data() {
@@ -70,10 +72,12 @@
       };
     },
   };
+
 </script>
 
 <template>
-<transition name="menu-transition"
+
+  <transition name="menu-transition"
               tag="div"
               mode="out-in"
               appear>
@@ -83,9 +87,14 @@
     <SPMenu v-if="state==states.SINGLEPLAYER"
             @state-change="tryStateChange"
             @start-sp="(e)=>start('start-sp', e)" />
+    <MPMenu v-if="state==states.MULTIPLAYER"
+            @state-change="tryStateChange"
+            @start-mp="(e)=>start('start-mp', e)" />
     <StatisticsMenu v-if="state==states.STATISTICS"
                     @state-change="tryStateChange" />
   </transition>
+
 </template>
 
-<style src="@/css/menu.css"> </style>
+<style src="@/css/menu.css">
+</style>

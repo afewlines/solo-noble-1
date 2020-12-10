@@ -96,14 +96,14 @@ class Pos {
 
 /**
  * A Peg
- * @property {number} id - arbitrary id of Peg
+ * @property {number} id - ID of Peg
  */
 class Peg {
   /**
    * @constructor
    */
-  constructor() {
-    this.id = Peg.created++;
+  constructor(id) {
+    this.id = id;
   }
 
   /**
@@ -328,7 +328,7 @@ class Board {
         let h = this.holes[y][x];
         switch (this.shape[y][x]) {
           case '1':
-            h.newContents = new Peg();
+            h.newContents = new Peg(h.id);
             h.newArcs = (this.findNeighbors(y, x));
             break;
           case '2':

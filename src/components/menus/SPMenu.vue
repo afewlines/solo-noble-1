@@ -77,7 +77,12 @@
         switch ( this.option ) {
         case SPMenuState.BOARD:
           this.CHOSEN.board = this.layouts[ chosen ];
-          this.changeState( SPMenuState.PEG );
+          //HOTWIRE STARTS HERE
+          // this.changeState( SPMenuState.PEG );
+          this.CHOSEN.peg = this.pegs.standard;
+          this.CHOSEN.room = this.rooms.standard;
+          this.$emit( "start-sp", this.CHOSEN );
+          this.changeState( SPMenuState.CONFIRM );
           break;
         case SPMenuState.PEG:
           this.CHOSEN.peg = this.pegs[ chosen ];
