@@ -14,6 +14,7 @@
   import { CustomMaterials } from '@/js/Materials.js';
 
   // INITIALIZATIONS
+  // enums... again.
   const GameState = {
     LOADING: 'LOADING',
     READY: 'READY',
@@ -22,6 +23,7 @@
     LOSE: 'LOSE',
   };
   const GameTurns = {
+    NONE: -1,
     LOCAL: 0,
     OTHER: 1,
   };
@@ -31,7 +33,7 @@
   const LOADER_GLTF = new GLTFLoader();
 
   /**
-   * Tween factory
+   * Tween factory... again
    */
   const TWEENING = {
     /**
@@ -154,11 +156,13 @@
    * Vue.js View: Standard Versus AI Game
    * @property {number} loading - Loading completion, arbitrary weights
    * @property {Object} gameData - Game data from App
-   * @property {VersusAIStandard} game - Game logic
-   * @property {number} turn - Current turn of game
+   * @property {GameTurns} turn - Current turn of game
    * @property {element} elThree - Element for Three.js
-   * @property {Object3D} selectedPeg - Currently selected Peg (PlayeR)
+   * @property {Object3D} boardObjPlayer - Board objects for this player and other
+   * @property {Object3D} selectedPeg - Currently selected Peg
    * @property {string[]} movingPegs - List of IDs of Pegs currently in motion
+   * @property {number} pegsRemovedPlayer - Pegs removed by this player and other
+   * @property {number} possibleJumps - Possible moves for this player and other
    */
   export default {
     name: 'MPBattle',
@@ -180,10 +184,10 @@
        * @instance
        */
       currentTurn() {
-        if (this.turn<0) {
-          return false
+        if (this.turn < 0) {
+          return false;
         }
-        return this.turn==1?this.nameOther:this.nameLocal;
+        return this.turn == 1 ? this.nameOther : this.nameLocal;
       },
     },
     methods: {
@@ -197,7 +201,7 @@
         requestAnimationFrame(this.animate);
       },
       /**
-       * Asynchronous loading function.
+       * Asynchronous loading function, set listeners for game functionality
        * Loads: three.js environment, game class, board/peg layout, three.js meshes
        * @memberof MPBattle
        * @instance
@@ -305,17 +309,20 @@
         this.pegsPlayerOther = loaded.pegs;
         //console.log(loaded.pegs.length);
         this.boardObjPlayerOther.translateZ(-5);
-        this.boardObjPlayerOther.rotateOnAxis(new THREE.Vector3(0,1,0),Math.PI)
+        this.boardObjPlayerOther.rotateOnAxis(
+          new THREE.Vector3(0, 1, 0),
+          Math.PI,
+        );
         this.loading += 2;
 
         // wait a sec
         await new Promise(res => setTimeout(res, 1000));
 
         // register socket handles
-        this.socket.on('battle-names', (names) => {
+        this.socket.on('battle-names', names => {
           this.nameLocal = names.local;
           this.nameOther = names.other;
-          this.turn = names.turn?0:1;
+          this.turn = names.turn ? 0 : 1;
         });
         this.socket.on('take-turn', () => {
           this.turnLocal();
@@ -323,7 +330,7 @@
         this.socket.on('echo-turn', data => {
           this.turnOpponent(data);
         });
-        this.socket.on('jump-confirm', (result) => {
+        this.socket.on('jump-confirm', result => {
           if (result) {
             this.movingPegs.push(this.selectedPeg.name);
             this.fireTween(
@@ -351,10 +358,10 @@
             this.elThree.addEventListener('click', this.onLeftClick, true);
           }
         });
-        this.loading += 4;
         this.socket.on('battle-end', data => {
           this.endGame(data);
         });
+        this.loading += 4;
 
         // game is ready, start
         console.log('Ready');
@@ -382,6 +389,7 @@
       },
       /**
        * Execute opponent's (other client) turn.
+       * @param {Object} turn - Data sent from server describing most recent turn
        * @memberof MPBattle
        * @instance
        */
@@ -408,7 +416,7 @@
         this.possibleJumpsOther = turn.r1;
       },
       /**
-       * Recieve game-end events, handle accordingly
+       * Recieve end events, handle accordingly
        * @param {boolean} win - If game ended as win or loss
        * @memberof MPBattle
        * @instance
@@ -456,8 +464,8 @@
             queue.push(TWEENING.doomedDown(target));
             queue.push(
               TWEENING.moveSlow(target, {
-                x: (this.$parent.selecedGameData.width / 2) + 2,
-                z: this.pegsRemovedPlayerLocal - (45 / 2),
+                x: this.$parent.selecedGameData.width / 2 + 2,
+                z: this.pegsRemovedPlayerLocal - 45 / 2,
               }),
             );
             break;
@@ -466,8 +474,8 @@
             queue.push(TWEENING.doomedDown(target));
             queue.push(
               TWEENING.moveSlow(target, {
-                x: (this.$parent.selecedGameData.width / 2) + 2,
-                z: this.pegsRemovedPlayerOther - (45 / 2),
+                x: this.$parent.selecedGameData.width / 2 + 2,
+                z: this.pegsRemovedPlayerOther - 45 / 2,
               }),
             );
             break;
@@ -485,7 +493,7 @@
         }
       },
       /**
-       * Main click event handler, main game functionality.
+       * Main click event handler, local player's turn functionality.
        * @param {Event} event - Event from trigger
        * @memberof MPBattle
        * @instance
@@ -523,14 +531,11 @@
           if (intersects[0].object.name.startsWith('hole')) {
             // TRIGGER
             if (this.selectedPeg != null) {
-              // let from = this.game.findHoleOfPeg( this.selectedPeg.name, true );
-              // let to = this.game.findHoleById( intersects[ 0 ].object.name, true );
-              let a = {
+              this.socket.emit('try-jump', {
                 from: this.selectedPeg.name,
                 to: intersects[0].object.name,
-              }
-              this.socket.emit('try-jump', a);
-              this.elThree.removeEventListener( 'click', this.onLeftClick, true );
+              });
+              this.elThree.removeEventListener('click', this.onLeftClick, true);
             }
           }
         }
@@ -558,9 +563,9 @@
        */
       clicked(mode) {
         if (mode == 'menu') {
-          this.$router.replace("/");
-          this.socket.emit("disconnect");
-          this.socket.emit("logout");
+          this.$router.replace('/');
+          this.socket.emit('disconnect');
+          this.socket.emit('logout');
         }
       },
     },
@@ -570,9 +575,8 @@
         loading: 0,
         // GAME VARIABLES
         gameData: null,
-        game: null,
         state: GameState.LOADING,
-        turn: -1,
+        turn: GameTurns.NONE,
         // THREE VARIABLES
         elThree: null,
         renderer: null,
@@ -584,14 +588,15 @@
         objects: {},
         pegGeometry: null,
         boardData: null,
-        selectedPeg: null,
-        movingPegs: [],
-        nameLocal: "",
-        nameOther: "",
         boardObjPlayerLocal: null,
         boardObjPlayerOther: null,
         pegsPlayerLocal: null,
         pegsPlayerOther: null,
+        // USER INTERACTION VARIABLES
+        selectedPeg: null,
+        movingPegs: [],
+        nameLocal: '',
+        nameOther: '',
         pegsRemovedPlayerLocal: -1,
         pegsRemovedPlayerOther: -1,
         possibleJumpsLocal: 1,
@@ -602,21 +607,8 @@
      * Fire when this View is presented
      */
     mounted() {
+      // get board data from server
       this.boardData = new Board(this.$parent.selecedGameData);
-      // this.boardData = new Board({
-      //   name: 'Battle: Double Wide',
-      //   height: 7,
-      //   width: 9,
-      //   shape: [
-      //     ['0', '0', '1', '1', '1', '1', '1', '0', '0'],
-      //     ['0', '0', '1', '1', '1', '1', '1', '0', '0'],
-      //     ['1', '1', '1', '1', '1', '1', '1', '1', '1'],
-      //     ['1', '1', '1', '2', '1', '2', '1', '1', '1'],
-      //     ['1', '1', '1', '1', '1', '1', '1', '1', '1'],
-      //     ['0', '0', '1', '1', '1', '1', '1', '0', '0'],
-      //     ['0', '0', '1', '1', '1', '1', '1', '0', '0'],
-      //   ],
-      // });
 
       this.load();
     },
@@ -639,10 +631,13 @@
              key="PLAYING"
              class="ui-box">
           <div class="row info">
-            <div class="bar local" :style="`flex-grow:${possibleJumpsLocal};`"></div>
-            <div class="bar other" :style="`flex-grow:${possibleJumpsOther};`"></div>
+            <div class="bar local"
+                 :style="`flex-grow:${possibleJumpsLocal};`"></div>
+            <div class="bar other"
+                 :style="`flex-grow:${possibleJumpsOther};`"></div>
           </div>
-          <div v-if="turn>=0" class="row info">
+          <div v-if="turn>=0"
+               class="row info">
             <h3>{{currentTurn}}'s turn</h3>
           </div>
         </div>
