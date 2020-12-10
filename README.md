@@ -1,11 +1,14 @@
 # csc421-solo-noble
-#### Phase 2
+#### Phase 3
 
-Preview: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble
+Live Version: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble
 
-Documentation: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble/docs
 
-Built with: Vue.js, Three.js, GSAP.
+Client Documentation: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble/docs-client
+Server Documentation: https://kuvapcsitrd01.kutztown.edu/~bsoel323/solo-noble/docs-server
+Server Hosting/Code: https://glitch.com/edit/#!/solo-noble-server
+
+Built with: Vue.js, Three.js, GSAP, socket.io, et al.
 Seems to run fine on modern Firefox and Chrome, already noticing a few CSS issues.
 
 
